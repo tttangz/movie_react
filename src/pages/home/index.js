@@ -61,7 +61,6 @@ import React, { useState, useEffect , useRef} from 'react';
 import { AppstoreOutlined } from '@ant-design/icons';
 import { Layout, Menu, Col, Row  } from 'antd';
 import service from '../../request';
-
 const { Header, Content, Footer } = Layout;
 function getItem(label, key, icon, children, type) {
   return {
@@ -73,22 +72,20 @@ function getItem(label, key, icon, children, type) {
   };
 }
 const items = [
-  getItem('动画', '3', <AppstoreOutlined />),
   getItem('电影', '1', <AppstoreOutlined />),
   getItem('连续剧', '2', <AppstoreOutlined />),
 ];
 const HomePage = () => {
   //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
+  const [type,setType] = useState('2');
   const [tag,setTag] = useState(['3']);
-  let data  = useRef([]);
+  const [show,setShow] = useState("");
+  let data  = useRef([{name:"default"}]);
   let error = useRef("");
   useEffect(() => {
     error.current = "";
-    let path = "/";
-    tag.forEach(element => {
-      path = path + "$" + element;
-    });
-    service.get('/tag/' + path, {}).then(
+    const path = "typeSearch/movie/type/" + 2 + "/?tag=" + 3;
+    service.get(path, {}).then(
       //{}可以传参数
       // {
       //   params: {
@@ -98,27 +95,54 @@ const HomePage = () => {
       //   headers: {},
       // }
       (resData)=>{
-        data.current = [resData];
-        error.current = "";
+        data.current = resData.data.data;
+        setShow("1");
       }
     ).catch(
       err => { error.current = err.message; }
     )
-    }, [tag]);
+    }, []);
   
-  const itemClick = (item)=>{
-    const isIn = tag.some((value) => {
-      return value === item.key;
-    })
-    if(!isIn){
-      const newTag = [...tag]
-      newTag.push(item.key);
-      setTag(newTag);
+  const typeClick = (item)=>{
+    if (type === item.key) {
+      return;
     }
+    console.log(item.key);
+    error.current = "";
+    const tagParam = tag.join("-");
+    const path = "typeSearch/movie/type/" + item.key + "/?tag=" + tagParam;
+    service.get(path, {}).then(
+      //{}可以传参数
+      // {
+      //   params: {
+      //     page: 3,
+      //     per: 2,
+      //   },
+      //   headers: {},
+      // }
+      (resData)=>{
+        data.current = resData.data.data;
+        setType(item.key);
+      }
+    ).catch(
+      err => { error.current = err.message; }
+    )
   };
+
+  // const itemClick = (item)=>{
+  //   const isIn = type.some((value) => {
+  //     return value === item.key;
+  //   })
+  //   if(!isIn){
+  //     const newType = [...type]
+  //     newType.push(item.key);
+  //     setType(newType);
+  //   }
+  // };
   console.log(data.current);
   console.log(error.current);
   return (
+    
     <Layout className="layout">
       <Header
         style={{
@@ -130,9 +154,9 @@ const HomePage = () => {
         <Menu
           theme="dark"
           mode="horizontal" //垂直
-          defaultSelectedKeys={['sub1']} //初始选中的菜单项 key 数组
+          defaultSelectedKeys={['2']} //初始选中的菜单项 key 数组
           items={items}
-          onClick={itemClick.bind(this)}
+          onClick={typeClick.bind(this)}
         />
       </Header>
       <Content
@@ -165,6 +189,7 @@ const HomePage = () => {
       >
         Ant Design ©2023 Created by Ant UED
       </Footer>
+      <div>{data.current[0].name}</div>
     </Layout>
   );
 };
