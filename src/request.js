@@ -34,6 +34,8 @@ service.interceptors.response.use(
             alert('服务器内部错误!');
         }else if( error.response.status === 503 ){
             alert('服务器不可用!');
+        }else if( error.response.status === 504 ){
+            alert('服务器转发失败!');
         }
         return Promise.reject(error)
     }

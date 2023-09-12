@@ -77,14 +77,12 @@ const items = [
 ];
 const HomePage = () => {
   //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
-  const [type,setType] = useState('2');
+  const [type,setType] = useState('1');
   const [tag,setTag] = useState(['3']);
-  const [show,setShow] = useState("");
-  let data  = useRef([{name:"default"}]);
-  let error = useRef("");
+  const [isLoading, setIsLoading] = useState(true);
+  let data = useRef([]);
   useEffect(() => {
-    error.current = "";
-    const path = "typeSearch/movie/type/" + 2 + "/?tag=" + 3;
+    const path = "typeSearch/movie/type/" + 1 + "/?tag=" + 3;
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -96,10 +94,12 @@ const HomePage = () => {
       // }
       (resData)=>{
         data.current = resData.data.data;
-        setShow("1");
+        setIsLoading(false);
       }
     ).catch(
-      err => { error.current = err.message; }
+      (err) => { 
+        console.log(err.message)
+      }
     )
     }, []);
   
@@ -107,8 +107,6 @@ const HomePage = () => {
     if (type === item.key) {
       return;
     }
-    console.log(item.key);
-    error.current = "";
     const tagParam = tag.join("-");
     const path = "typeSearch/movie/type/" + item.key + "/?tag=" + tagParam;
     service.get(path, {}).then(
@@ -125,7 +123,9 @@ const HomePage = () => {
         setType(item.key);
       }
     ).catch(
-      err => { error.current = err.message; }
+      (err) => { 
+        console.log(err.message)
+      }
     )
   };
 
@@ -139,10 +139,19 @@ const HomePage = () => {
   //     setType(newType);
   //   }
   // };
-  console.log(data.current);
-  console.log(error.current);
+
+  const cols = [];
+  for (let i = 0; i < data.current.length; i++) {
+    cols.push(
+      <Col key={i.toString()} span={6} style={{border:"solid 1px", height:"200px"}}>
+        <div>{data.current[i].name}</div>
+      </Col>,
+    );
+  }
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
   return (
-    
     <Layout className="layout">
       <Header
         style={{
@@ -154,32 +163,14 @@ const HomePage = () => {
         <Menu
           theme="dark"
           mode="horizontal" //垂直
-          defaultSelectedKeys={['2']} //初始选中的菜单项 key 数组
+          defaultSelectedKeys={['1']} //初始选中的菜单项 key 数组
           items={items}
           onClick={typeClick.bind(this)}
         />
       </Header>
-      <Content
-        style={{
-          padding: '0 50px',
-          background: 'yellow',
-        }}
-      >
-        <Row>
-          <Col span={12}>1</Col>
-          <Col span={12}>2</Col>
-        </Row>
-        <Row>
-          <Col span={12}>3</Col>
-          <Col span={12}>4</Col>
-        </Row>
-        <Row>
-          <Col span={12}>5</Col>
-          <Col span={12}>6</Col>
-        </Row>
-        <Row>
-          <Col span={12}>7</Col>
-          <Col span={12}>8</Col>
+      <Content>
+        <Row gutter={[32,32]}>
+          {cols}
         </Row>
       </Content>
       <Footer
@@ -189,7 +180,6 @@ const HomePage = () => {
       >
         Ant Design ©2023 Created by Ant UED
       </Footer>
-      <div>{data.current[0].name}</div>
     </Layout>
   );
 };
