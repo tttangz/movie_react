@@ -61,6 +61,7 @@ import React, { useState, useEffect , useRef} from 'react';
 import { AppstoreOutlined } from '@ant-design/icons';
 import { Layout, Menu, Col, Row  } from 'antd';
 import service from '../../request';
+import { FloatButton } from 'antd';
 const { Header, Content, Footer } = Layout;
 function getItem(label, key, icon, children, type) {
   return {
