@@ -59,7 +59,7 @@
 
 import React, { useState, useEffect , useRef} from 'react';
 import { AppstoreOutlined } from '@ant-design/icons';
-import { Layout, Menu, Col, Row  } from 'antd';
+import { Layout, Menu, Col, Row, FloatButton  } from 'antd';
 import service from '../../request';
 import { FloatButton } from 'antd';
 const { Header, Content, Footer } = Layout;
@@ -73,17 +73,18 @@ function getItem(label, key, icon, children, type) {
   };
 }
 const items = [
-  getItem('电影', '1', <AppstoreOutlined />),
-  getItem('连续剧', '2', <AppstoreOutlined />),
+  getItem('动画', '1', <AppstoreOutlined />),
+  getItem('非动画', '2', <AppstoreOutlined />),
 ];
 const HomePage = () => {
   //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
   const [type,setType] = useState('1');
   const [tag,setTag] = useState(['3']);
+  const [isControlShow, setControlShow] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   let data = useRef([]);
   useEffect(() => {
-    const path = "typeSearch/movie/type/" + 1 + "/?tag=" + 3;
+    const path = "typeSearch/movie/type/" + 1;
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -109,7 +110,7 @@ const HomePage = () => {
       return;
     }
     const tagParam = tag.join("-");
-    const path = "typeSearch/movie/type/" + item.key + "/?tag=" + tagParam;
+    const path = "typeSearch/movie/type/" + item.key
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -154,12 +155,26 @@ const HomePage = () => {
   }
   return (
     <Layout className="layout">
+      <FloatButton onClick={()=>{setControlShow(true)}} />
+      <div style={{
+          display: isControlShow ? 'block' : 'none',
+          width: "80%",
+          height: "60%",
+          position: "absolute",
+          top: "50%",
+          left: "50%", 
+          transform: "translate(-50%,-50%)",
+        }}
+        onBlur={()=>{setControlShow(false)}}  
+      >
+
+
+      </div>
       <Header
         style={{
           display: 'flex',
           alignItems: 'center',
-        }}
-      >
+        }}>
         <div className="demo-logo" />
         <Menu
           theme="dark"
