@@ -59,10 +59,16 @@
 
 import React, { useState, useEffect , useRef} from 'react';
 import { AppstoreOutlined } from '@ant-design/icons';
-import { Layout, Menu, Col, Row, FloatButton  } from 'antd';
+import { Layout, Menu, Col, Row  } from 'antd';
 import service from '../../request';
-import { FloatButton } from 'antd';
+import PopBox from '../../utils/popBox';
 const { Header, Content, Footer } = Layout;
+const movieTags = {
+  radioBox:[
+    [{id:"3",name:"电影"},{id:"4",name:"连续剧"}]
+  ],
+  checkBox:[]
+};
 function getItem(label, key, icon, children, type) {
   return {
     key,
@@ -73,16 +79,80 @@ function getItem(label, key, icon, children, type) {
   };
 }
 const items = [
-  getItem('动画', '1', <AppstoreOutlined />),
-  getItem('非动画', '2', <AppstoreOutlined />),
+  getItem('非动画', '1', <AppstoreOutlined />),
+  getItem('动画', '2', <AppstoreOutlined />),
 ];
 const HomePage = () => {
   //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
   const [type,setType] = useState('1');
-  const [tag,setTag] = useState(['3']);
-  const [isControlShow, setControlShow] = useState(false);
+  const [tag,setTag] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   let data = useRef([]);
+  let dataShow = useRef([]);
+  //const tagCheckedRef = useRef({tagCheckedList:[]});
+  // useEffect(()=>{
+  //   //TODO
+  //   console.log(tagCheckedRef.current.tagCheckedList);
+  //   data.current = data.current.filter(item=>{
+  //     return item.tag.includes(tagCheckedRef.current);
+  //   });
+  //   setTag(tagCheckedRef.current.tagCheckedList)
+  // },[tagCheckedRef.current]);
+
+  const radioClick = (id,index)=>{
+    let tempTag;
+    const radioBox = movieTags.radioBox[index];
+    const unCheckedId = radioBox.map((item)=>{
+      if(item.id !== id){
+        return item.id;
+      }
+    });
+    if(tag.includes(id)) {
+      tempTag = tag.filter(item =>{
+        return item !== id;
+      });
+    } else {
+      tempTag = [...tag];
+      tempTag.push(id);
+    }
+    tempTag = tempTag.map((tagId)=>{
+      unCheckedId.forEach((unId) => {
+        if(tagId !== unId){
+          return tagId;
+        }
+      })
+    });
+    dataShow.current = dataFilter(tempTag);
+    setTag(tempTag);
+  }
+
+  const checkClick = (id)=>{
+    let tempTag;
+    if(tag.includes(id)) {
+      tempTag = tag.filter(item =>{
+        return item !== id;
+      });
+    } else {
+      tempTag = [...tag];
+      tempTag.push(id);
+    }
+    dataShow.current = dataFilter(tempTag);
+    setTag(tempTag);
+  }
+
+  const dataFilter = (tempTag) =>{
+    if(tempTag.length === 0){
+      return data.current;
+    }
+
+    return data.current.filter(item=>{
+      if(item.tag === "null"){
+        return true;
+      }
+      const itemTags = JSON.parse(item.tag);
+      return tempTag.every((val) => itemTags.includes(val));
+    });
+  }
   useEffect(() => {
     const path = "typeSearch/movie/type/" + 1;
     service.get(path, {}).then(
@@ -95,7 +165,7 @@ const HomePage = () => {
       //   headers: {},
       // }
       (resData)=>{
-        data.current = resData.data.data;
+        dataShow.current = data.current = resData.data.data;
         setIsLoading(false);
       }
     ).catch(
@@ -109,7 +179,6 @@ const HomePage = () => {
     if (type === item.key) {
       return;
     }
-    const tagParam = tag.join("-");
     const path = "typeSearch/movie/type/" + item.key
     service.get(path, {}).then(
       //{}可以传参数
@@ -122,6 +191,7 @@ const HomePage = () => {
       // }
       (resData)=>{
         data.current = resData.data.data;
+        dataShow.current = dataFilter(tag);
         setType(item.key);
       }
     ).catch(
@@ -143,7 +213,7 @@ const HomePage = () => {
   // };
 
   const cols = [];
-  for (let i = 0; i < data.current.length; i++) {
+  for (let i = 0; i < dataShow.current.length; i++) {
     cols.push(
       <Col key={i.toString()} span={6} style={{border:"solid 1px", height:"200px"}}>
         <div>{data.current[i].name}</div>
@@ -155,21 +225,7 @@ const HomePage = () => {
   }
   return (
     <Layout className="layout">
-      <FloatButton onClick={()=>{setControlShow(true)}} />
-      <div style={{
-          display: isControlShow ? 'block' : 'none',
-          width: "80%",
-          height: "60%",
-          position: "absolute",
-          top: "50%",
-          left: "50%", 
-          transform: "translate(-50%,-50%)",
-        }}
-        onBlur={()=>{setControlShow(false)}}  
-      >
-
-
-      </div>
+      <PopBox tags={movieTags} tagChecked={tag} radioClick={radioClick} checkClick={checkClick} />
       <Header
         style={{
           display: 'flex',
