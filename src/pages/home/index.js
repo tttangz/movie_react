@@ -101,12 +101,14 @@ const HomePage = () => {
 
   const radioClick = (id,index)=>{
     let tempTag;
-    const radioBox = movieTags.radioBox[index];
-    const unCheckedId = radioBox.map((item)=>{
+    const nowRadioBox = movieTags.radioBox[index];
+    let unCheckedId = [];
+    nowRadioBox.forEach((item)=>{
       if(item.id !== id){
-        return item.id;
+        unCheckedId.push(item.id);
       }
     });
+    //已经有了则去掉，没有则添加（toggle）
     if(tag.includes(id)) {
       tempTag = tag.filter(item =>{
         return item !== id;
@@ -114,14 +116,10 @@ const HomePage = () => {
     } else {
       tempTag = [...tag];
       tempTag.push(id);
+      tempTag = tempTag.filter((tagId)=>{
+        return !unCheckedId.includes(tagId);
+      });
     }
-    tempTag = tempTag.map((tagId)=>{
-      unCheckedId.forEach((unId) => {
-        if(tagId !== unId){
-          return tagId;
-        }
-      })
-    });
     dataShow.current = dataFilter(tempTag);
     setTag(tempTag);
   }
@@ -140,6 +138,7 @@ const HomePage = () => {
     setTag(tempTag);
   }
 
+  //给当前页面加载的数据按照tag过滤
   const dataFilter = (tempTag) =>{
     if(tempTag.length === 0){
       return data.current;

@@ -27,15 +27,15 @@ service.interceptors.response.use(
     },
     (error)=>{
         if( error.response.status === 401 ){
-            alert('登陆过期,重新登录!');
+            console.log('登陆过期,重新登录!');
         }else if( error.response.status === 404 ){
-            alert('访问路径有误!');
+            console.log('访问路径有误!');
         }else if( error.response.status === 500 ){
-            alert('服务器内部错误!');
+            console.log('服务器内部错误!');
         }else if( error.response.status === 503 ){
-            alert('服务器不可用!');
+            console.log('服务器不可用!');
         }else if( error.response.status === 504 ){
-            alert('服务器转发失败!');
+            console.log('服务器转发失败!');
         }
         return Promise.reject(error)
     }
