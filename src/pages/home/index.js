@@ -57,7 +57,8 @@
 // export default redHOC(HomePage)
 
 
-import React, { useState, useEffect , useRef} from 'react';
+import React, { useState, useEffect , useRef } from 'react';
+import { useNavigate } from "react-router-dom";
 import { AppstoreOutlined } from '@ant-design/icons';
 import { Layout, Menu, Col, Row  } from 'antd';
 import service from '../../request';
@@ -83,7 +84,7 @@ const items = [
   getItem('动画', '2', <AppstoreOutlined />),
 ];
 const HomePage = () => {
-  //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
+  const navigate = useNavigate();  //跳转navigate(page)跳转是对应react的页面跳转。
   const [type,setType] = useState('1');
   const [tag,setTag] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -153,7 +154,7 @@ const HomePage = () => {
     });
   }
   useEffect(() => {
-    const path = "typeSearch/movie/type/" + 1;
+    const path = "s1/movie/type/" + 1;
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -169,7 +170,7 @@ const HomePage = () => {
       }
     ).catch(
       (err) => { 
-        console.log(err.message)
+        console.log("first display request error(useEffect)" + err.message);
       }
     )
     }, []);
@@ -178,7 +179,7 @@ const HomePage = () => {
     if (type === item.key) {
       return;
     }
-    const path = "typeSearch/movie/type/" + item.key
+    const path = "s1/movie/type/" + item.key;
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -195,27 +196,43 @@ const HomePage = () => {
       }
     ).catch(
       (err) => { 
-        console.log(err.message)
+        console.log("function typeClick request error" + err.message);
       }
     )
   };
 
-  // const itemClick = (item)=>{
-  //   const isIn = type.some((value) => {
-  //     return value === item.key;
-  //   })
-  //   if(!isIn){
-  //     const newType = [...type]
-  //     newType.push(item.key);
-  //     setType(newType);
-  //   }
-  // };
+  const toMovieDetail = (simpleData) =>{
+    const path = "s1/movie/detail/id/" + simpleData.id;
+    service.get(path, {}).then(
+      //{}可以传参数
+      // {
+      //   params: {
+      //     page: 3,
+      //     per: 2,
+      //   },
+      //   headers: {},
+      // }
+      (resData)=>{
+        navigate('/detail',  {state: {detailData : resData.data.data, simpleData : simpleData}});
+      }
+    ).catch(
+      (err) => { 
+        console.log("function toMovieDetail request error" + err.message);
+      }
+    )
+  }
+
+
+//console.log(dataShow.current);
 
   const cols = [];
   for (let i = 0; i < dataShow.current.length; i++) {
     cols.push(
-      <Col key={i.toString()} span={6} style={{border:"solid 1px", height:"200px"}}>
-        <div>{data.current[i].name}</div>
+      <Col onClick={toMovieDetail.bind(this,data.current[i])} key={i.toString()} span={6} style={{border:"solid 1px", height:"200px"}}>
+        <div>
+          <div><img alt="#" src={data.current[i].img}></img></div>
+          <p>{data.current[i].name}</p>
+        </div>
       </Col>,
     );
   }
