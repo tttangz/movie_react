@@ -38,6 +38,7 @@ function PopBox(props){
         let checked = false;
         radioIndex ++;
         return <div key={'div'+radioIndex}>
+            <p>●</p>
             {itemP.map(item=>{
                 let isInclude = false;
                 if (!checked) {
@@ -53,6 +54,7 @@ function PopBox(props){
     });
 
     const checkDiv =  <div>
+        <p>■</p>
         {checkBox.map(item=>{
         return <div style={{zIndex:1001,display:"inline",width:"20px",height:"20px",border:"solid 1px",margin:"3px",background: tagChecked.includes(item.id)?"blue":"white",}} key={item.id} onClick={checkClick.bind(this,item.id)}>{item.name}</div>
         })}

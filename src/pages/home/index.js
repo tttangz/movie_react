@@ -67,7 +67,7 @@ const movieTags = {
   radioBox:[
     [{id:"3",name:"电影"},{id:"4",name:"连续剧"}]
   ],
-  checkBox:[]
+  checkBox:[{id:"23",name:"战斗"},{id:"19",name:"热血"},{id:"25",name:"异世界"}]
 };
 function getItem(label, key, icon, children, type) {
   return {
@@ -84,7 +84,7 @@ const items = [
 ];
 const HomePage = () => {
   //const navigate = useNavigate()  跳转navigate(page)跳转是对应react的页面跳转。
-  const [type,setType] = useState('1');
+  const [type,setType] = useState('2');
   const [tag,setTag] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   let data = useRef([]);
@@ -153,7 +153,7 @@ const HomePage = () => {
     });
   }
   useEffect(() => {
-    const path = "typeSearch/movie/type/" + 1;
+    const path = "typeSearch/movie/type/" + type;
     service.get(path, {}).then(
       //{}可以传参数
       // {
