@@ -154,7 +154,8 @@ const HomePage = () => {
     });
   }
   useEffect(() => {
-    const path = "s1/movie/type/" + 1;
+    console.log(type)
+    const path = "s1/movie/type/" + type;
     service.get(path, {}).then(
       //{}可以传参数
       // {
@@ -224,7 +225,6 @@ const HomePage = () => {
 
 
 //console.log(dataShow.current);
-
   const cols = [];
   for (let i = 0; i < dataShow.current.length; i++) {
     cols.push(
@@ -251,7 +251,7 @@ const HomePage = () => {
         <Menu
           theme="dark"
           mode="horizontal" //垂直
-          defaultSelectedKeys={['1']} //初始选中的菜单项 key 数组
+          defaultSelectedKeys={[type]} //初始选中的菜单项 key 数组
           items={items}
           onClick={typeClick.bind(this)}
         />
