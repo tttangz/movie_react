@@ -230,7 +230,10 @@ const HomePage = () => {
     cols.push(
       <Col onClick={toMovieDetail.bind(this,data.current[i])} key={i.toString()} span={6} style={{border:"solid 1px", height:"200px"}}>
         <div>
-          <div><img alt="#" src={data.current[i].img}></img></div>
+          <div><img style={{
+            width:'100%',
+            height:'100%'
+          }}  alt="#" src={data.current[i].img}></img></div>
           <p>{data.current[i].name}</p>
         </div>
       </Col>,
